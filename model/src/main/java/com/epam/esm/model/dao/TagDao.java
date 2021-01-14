@@ -4,9 +4,9 @@ import com.epam.esm.model.dao.entity.Tag;
 import com.epam.esm.model.dao.exception.DaoException;
 
 public interface TagDao {
-    boolean create(Tag tag) throws DaoException;
+    boolean create(Tag tag) ;
 
-    Tag read(Long id) throws DaoException;
+    Tag read(Long id);
 
-    boolean delete(Long id) throws DaoException;
+    boolean delete(Long id) ;
 }

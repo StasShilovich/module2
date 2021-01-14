@@ -12,7 +12,9 @@ import javax.sql.DataSource;
 @Repository
 public class TagDaoImpl implements TagDao {
 
-    private final static String READ_TAG_SQL = "SELECT * FROM tag WHERE id=?";
+    private final static String READ_TAG_SQL = "SELECT id,name FROM tag WHERE id=?";
+    private final static String CREATE_TAG_SQL = "INSERT INTO tag (name) VALUES (?)";
+    private final static String DELETE_TAG_SQL = "DELETE FROM tag WHERE id=?";
 
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
@@ -22,17 +24,18 @@ public class TagDaoImpl implements TagDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean create(Tag tag) throws DaoException {
-        return false;
+    public boolean create(Tag tag) {
+        int rows = jdbcTemplate.update(CREATE_TAG_SQL, tag.getName());
+        return rows > 0;
     }
 
-    public Tag read(Long id) throws DaoException {
+    public Tag read(Long id){
         Tag tag = jdbcTemplate.queryForObject(READ_TAG_SQL, new Object[]{id}, new TagMapper());
-        System.out.println(tag);
         return tag;
     }
 
-    public boolean delete(Long id) throws DaoException {
-        return false;
+    public boolean delete(Long id) {
+        int rows = jdbcTemplate.update(DELETE_TAG_SQL, id);
+        return rows > 0;
     }
 }
