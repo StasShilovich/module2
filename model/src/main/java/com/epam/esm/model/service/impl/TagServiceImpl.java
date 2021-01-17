@@ -3,18 +3,21 @@ package com.epam.esm.model.service.impl;
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.entity.Tag;
 import com.epam.esm.model.dao.exception.DaoException;
+import com.epam.esm.model.dao.impl.TagDaoImpl;
 import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.converter.impl.TagConverter;
 import com.epam.esm.model.service.dto.TagDTO;
 import com.epam.esm.model.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TagServiceImpl implements TagService {
 
-    private TagDao tagDao;
-    private TagConverter tagConverter;
+    private final static Logger logger = Logger.getLogger(TagServiceImpl.class);
+    private final TagDao tagDao;
+    private final TagConverter tagConverter;
 
     public TagServiceImpl(TagDao tagDao, TagConverter tagConverter) {
         this.tagDao = tagDao;
@@ -26,8 +29,9 @@ public class TagServiceImpl implements TagService {
             Tag tag = tagDao.read(id);
             TagDTO tagDTO = tagConverter.toDTO(tag);
             return tagDTO;
-        } catch (DataAccessException e) {
-            throw new ServiceException(e.getMessage());
+        } catch (DaoException e) {
+            logger.error("Find tag service exception", e);
+            throw new ServiceException("Find tag service exception", e);
         }
     }
 
@@ -37,8 +41,9 @@ public class TagServiceImpl implements TagService {
             Tag tag = tagConverter.fromDTO(tagDTO);
             boolean isAdd = tagDao.create(tag);
             return isAdd;
-        } catch (DataAccessException e) {
-            throw new ServiceException(e.getMessage());
+        } catch (DaoException e) {
+            logger.error("Add tag service exception", e);
+            throw new ServiceException("Add tag service exception", e);
         }
     }
 
@@ -47,8 +52,9 @@ public class TagServiceImpl implements TagService {
         try {
             boolean isDelete = tagDao.delete(id);
             return isDelete;
-        } catch (DataAccessException e) {
-            throw new ServiceException(e.getMessage());
+        } catch (DaoException e) {
+            logger.error("Delete tag service exception", e);
+            throw new ServiceException("Delete tag service exception", e);
         }
     }
 }

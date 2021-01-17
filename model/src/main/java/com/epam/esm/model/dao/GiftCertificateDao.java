@@ -4,19 +4,22 @@ import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.exception.DaoException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GiftCertificateDao {
-    boolean create(GiftCertificate certificate);
+    boolean create(GiftCertificate certificate) throws DaoException;
 
-    GiftCertificate read(Long id);
+    GiftCertificate read(Long id) throws DaoException;
 
-    GiftCertificate update(GiftCertificate certificate);
+    boolean update(Map<String, Object> map, Long id) throws DaoException;
 
-    boolean delete(Long id);
+    boolean delete(Long id) throws DaoException;
 
-    GiftCertificate findByTag(String tag);
+    List<GiftCertificate> findByTag(String tag) throws DaoException;
 
-    List<GiftCertificate> sortByName();
+    List<GiftCertificate> searchByNameOrDesc(String part) throws DaoException;
 
-    List<GiftCertificate> sortByDate();
+    List<GiftCertificate> sortByDate() throws DaoException;
+
+    List<GiftCertificate> sortByName() throws DaoException;
 }

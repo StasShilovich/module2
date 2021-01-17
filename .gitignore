@@ -2,7 +2,8 @@
 out/*
 lib/*
 target/*
-**/target/*
+*/target/*
+*/target/**
 .idea
 *.iws
 *.iml

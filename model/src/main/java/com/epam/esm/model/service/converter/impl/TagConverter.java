@@ -10,6 +10,7 @@ public class TagConverter implements Converter<TagDTO, Tag> {
     @Override
     public TagDTO toDTO(Tag tag) {
         TagDTO tagDTO = new TagDTO();
+        tagDTO.setId(tag.getId());
         tagDTO.setName(tag.getName());
         return tagDTO;
     }
@@ -17,6 +18,7 @@ public class TagConverter implements Converter<TagDTO, Tag> {
     @Override
     public Tag fromDTO(TagDTO tagDTO) {
         Tag tag = new Tag();
+        tag.setId(tagDTO.getId());
         tag.setName(tagDTO.getName());
         return tag;
     }
