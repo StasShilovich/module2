@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 @EnableWebMvc
 @Configuration
 public class SpringConfig {
+
     @Bean
     public DataSource mysqlDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -22,7 +23,7 @@ public class SpringConfig {
     }
 
     @Bean
-    JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(mysqlDataSource());
+    JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 }

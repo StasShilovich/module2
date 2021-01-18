@@ -17,6 +17,7 @@ public class CertificateConverter implements Converter<CertificateDTO, GiftCerti
     @Override
     public CertificateDTO toDTO(GiftCertificate certificate) {
         CertificateDTO certificateDTO = new CertificateDTO();
+        certificateDTO.setId(certificate.getId());
         certificateDTO.setName(certificate.getName());
         certificateDTO.setDescription(certificate.getDescription());
         certificateDTO.setDuration(certificate.getDuration());
@@ -32,6 +33,7 @@ public class CertificateConverter implements Converter<CertificateDTO, GiftCerti
     @Override
     public GiftCertificate fromDTO(CertificateDTO certificateDTO) {
         GiftCertificate certificate = new GiftCertificate();
+        certificate.setId(certificateDTO.getId());
         certificate.setName(certificateDTO.getName());
         certificate.setDescription(certificateDTO.getDescription());
         certificate.setDuration(certificateDTO.getDuration());
