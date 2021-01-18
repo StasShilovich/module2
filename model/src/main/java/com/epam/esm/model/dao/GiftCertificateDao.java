@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface GiftCertificateDao {
+
     boolean create(GiftCertificate certificate) throws DaoException;
 
     GiftCertificate read(Long id) throws DaoException;

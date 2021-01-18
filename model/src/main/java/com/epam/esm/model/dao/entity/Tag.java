@@ -40,10 +40,16 @@ public class Tag {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Tag)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Tag)) {
+            return false;
+        }
         Tag tag = (Tag) o;
-        if (getId() != null ? !getId().equals(tag.getId()) : tag.getId() != null) return false;
+        if (getId() != null ? !getId().equals(tag.getId()) : tag.getId() != null) {
+            return false;
+        }
         return getName() != null ? getName().equals(tag.getName()) : tag.getName() == null;
     }
 

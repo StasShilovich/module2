@@ -5,10 +5,8 @@ import com.epam.esm.model.service.converter.Converter;
 import com.epam.esm.model.service.dto.CertificateDTO;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Component
 public class CertificateConverter implements Converter<CertificateDTO, GiftCertificate> {

@@ -1,6 +1,7 @@
 package com.epam.esm.model.service.dto;
 
 public class TagDTO {
+
     private Long id;
     private String name;
 

@@ -1,6 +1,6 @@
-INSERT INTO tag (name) VALUES ('tourism');
-INSERT INTO tag (name) VALUES ('sport');
-INSERT INTO tag (name) VALUES ('movie');
-INSERT INTO tag (name) VALUES ('relaxation');
-INSERT INTO tag (name) VALUES ('christmas');
-INSERT INTO tag (name) VALUES ('shopping');
+INSERT INTO tag (id,name) VALUES (1,'tourism');
+INSERT INTO tag (id,name) VALUES (2,'sport');
+INSERT INTO tag (id,name) VALUES (3,'movie');
+INSERT INTO tag (id,name) VALUES (4,'relaxation');
+INSERT INTO tag (id,name) VALUES (5,'christmas');
+INSERT INTO tag (id,name) VALUES (6,'shopping');

@@ -1,6 +1,7 @@
 package com.epam.esm.model.dao.exception;
 
 public class DaoException extends Exception {
+
     public DaoException() {
         super();
     }

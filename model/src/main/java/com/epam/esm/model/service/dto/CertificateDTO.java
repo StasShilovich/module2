@@ -1,9 +1,9 @@
 package com.epam.esm.model.service.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public class CertificateDTO {
+
     private Long id;
     private String name;
     private String description;
@@ -84,34 +84,45 @@ public class CertificateDTO {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CertificateDTO{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", price=").append(price);
-        sb.append(", duration=").append(duration);
-        sb.append(", createDate='").append(createDate).append('\'');
-        sb.append(", lastUpdateDate='").append(lastUpdateDate).append('\'');
-        sb.append('}');
-        return sb.toString();
+        final StringBuilder builder = new StringBuilder("CertificateDTO{");
+        builder.append("id=").append(id);
+        builder.append(", name='").append(name).append('\'');
+        builder.append(", description='").append(description).append('\'');
+        builder.append(", price=").append(price);
+        builder.append(", duration=").append(duration);
+        builder.append(", createDate='").append(createDate).append('\'');
+        builder.append(", lastUpdateDate='").append(lastUpdateDate).append('\'');
+        builder.append('}');
+        return builder.toString();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CertificateDTO)) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CertificateDTO)) {
+            return false;
+        }
         CertificateDTO that = (CertificateDTO) o;
-
-        if (getId() != null ? !getId().equals(that.getId()) : that.getId() != null) return false;
-        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
-        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
+        if (getId() != null ? !getId().equals(that.getId()) : that.getId() != null) {
             return false;
-        if (getPrice() != null ? !getPrice().equals(that.getPrice()) : that.getPrice() != null) return false;
-        if (getDuration() != null ? !getDuration().equals(that.getDuration()) : that.getDuration() != null)
+        }
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) {
             return false;
-        if (getCreateDate() != null ? !getCreateDate().equals(that.getCreateDate()) : that.getCreateDate() != null)
+        }
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null) {
             return false;
+        }
+        if (getPrice() != null ? !getPrice().equals(that.getPrice()) : that.getPrice() != null) {
+            return false;
+        }
+        if (getDuration() != null ? !getDuration().equals(that.getDuration()) : that.getDuration() != null) {
+            return false;
+        }
+        if (getCreateDate() != null ? !getCreateDate().equals(that.getCreateDate()) : that.getCreateDate() != null) {
+            return false;
+        }
         return getLastUpdateDate() != null ? getLastUpdateDate().equals(that.getLastUpdateDate()) : that.getLastUpdateDate() == null;
     }
 

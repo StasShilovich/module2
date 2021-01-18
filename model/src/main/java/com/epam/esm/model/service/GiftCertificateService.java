@@ -6,6 +6,7 @@ import com.epam.esm.model.service.exception.ServiceException;
 import java.util.List;
 
 public interface GiftCertificateService {
+
     CertificateDTO find(Long id) throws ServiceException;
 
     boolean add(CertificateDTO certificateDTO) throws ServiceException;
