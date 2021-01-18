@@ -12,6 +12,20 @@ public class CertificateDTO {
     private String createDate;
     private String lastUpdateDate;
 
+    public CertificateDTO() {
+    }
+
+    public CertificateDTO(Long id, String name, String description, BigDecimal price,
+                          Integer duration, String createDate, String lastUpdateDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
     public Long getId() {
         return id;
     }

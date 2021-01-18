@@ -7,50 +7,101 @@ import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.converter.impl.TagConverter;
 import com.epam.esm.model.service.dto.TagDTO;
 import com.epam.esm.model.service.exception.ServiceException;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@RunWith(JUnitPlatform.class)
 class TagServiceImplTest {
 
     @Mock
     TagDao tagDao;
     TagConverter tagConverter;
     TagService tagService;
+    Tag correctTag;
+    TagDTO correctTagDTO;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         tagConverter = new TagConverter();
         tagService = new TagServiceImpl(tagDao, tagConverter);
+        correctTag = new Tag(1L, "name");
+        correctTagDTO = new TagDTO(1L, "name");
     }
 
     @Test
-    void find() throws ServiceException, DaoException {
-        when(tagDao.read(anyLong())).thenReturn(new Tag(1L, "name"));
+    void testFindTagPositive() throws ServiceException, DaoException {
+        lenient().when(tagDao.read(anyLong())).thenReturn(correctTag);
         TagDTO actual = tagService.find(1L);
-        TagDTO expected = new TagDTO(1L, "name");
-        assertEquals(actual, expected);
+        assertEquals(actual, correctTagDTO);
     }
 
     @Test
-    void add() {
+    void testFindTagNegative() throws ServiceException, DaoException {
+        lenient().when(tagDao.read(anyLong())).thenReturn(correctTag);
+        TagDTO actual = tagService.find(1L);
+        TagDTO expected = new TagDTO(1L, "names");
+        assertNotEquals(actual, expected);
     }
 
     @Test
-    void delete() {
+    void testFindTagException() throws DaoException {
+        lenient().when(tagDao.read(anyLong())).thenThrow(DaoException.class);
+        assertThrows(ServiceException.class, () -> tagService.find(1L));
+    }
+
+    @Test
+    void testAddPositive() throws ServiceException, DaoException {
+        lenient().when(tagDao.create(any(Tag.class))).thenReturn(true);
+        boolean condition = tagService.add(correctTagDTO);
+        assertTrue(condition);
+    }
+
+    @Test
+    void testAddNegative() throws DaoException, ServiceException {
+        lenient().when(tagDao.create(any(Tag.class))).thenReturn(false);
+        boolean condition = tagService.add(correctTagDTO);
+        assertFalse(condition);
+    }
+
+    @Test
+    void testAddException() throws DaoException {
+        lenient().when(tagDao.create(any(Tag.class))).thenThrow(DaoException.class);
+        assertThrows(ServiceException.class, () -> tagService.add(correctTagDTO));
+    }
+
+    @Test
+    void testDeletePositive() throws DaoException, ServiceException {
+        lenient().when(tagDao.delete(anyLong())).thenReturn(true);
+        boolean condition = tagService.delete(1L);
+        assertTrue(condition);
+    }
+
+    @Test
+    void testDeleteNegative() throws DaoException, ServiceException {
+        lenient().when(tagDao.delete(anyLong())).thenReturn(false);
+        boolean condition = tagService.delete(1L);
+        assertFalse(condition);
+    }
+
+    @Test
+    void testDeleteException() throws DaoException {
+        lenient().when(tagDao.delete(anyLong())).thenThrow(DaoException.class);
+        assertThrows(ServiceException.class, () -> tagService.delete(1L));
     }
 }
