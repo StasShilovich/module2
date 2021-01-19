@@ -1,11 +1,11 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.exception;
 
-public class Response {
+public class ErrorResponse {
 
     private String errorMessage;
-    private Long errorCode;
+    private Integer errorCode;
 
-    public Response(String errorMessage, Long errorCode) {
+    public ErrorResponse(String errorMessage, Integer errorCode) {
         this.errorMessage = errorMessage;
         this.errorCode = errorCode;
     }
@@ -18,11 +18,11 @@ public class Response {
         this.errorMessage = errorMessage;
     }
 
-    public Long getErrorCode() {
+    public Integer getErrorCode() {
         return errorCode;
     }
 
-    public void setErrorCode(Long errorCode) {
+    public void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
     }
 }

@@ -3,7 +3,6 @@ package com.epam.esm.controller;
 import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.dto.TagDTO;
 import com.epam.esm.model.service.exception.ServiceException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +17,6 @@ public class TagController {
 
     private TagController(TagService tagService) {
         this.tagService = tagService;
-    }
-
-    /**
-     * Handle exception response entity.
-     *
-     * @param exception the exception
-     * @return the response entity
-     */
-    @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<Response> handleException(ServiceException exception) {
-        Response response = new Response(exception.getLocalizedMessage(), (long) HttpStatus.NOT_FOUND.value());
-        return ResponseEntity.ok(response);
     }
 
     /**

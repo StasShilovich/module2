@@ -111,7 +111,8 @@ public class CertificateDTO {
         if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) {
             return false;
         }
-        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null) {
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) :
+                that.getDescription() != null) {
             return false;
         }
         if (getPrice() != null ? !getPrice().equals(that.getPrice()) : that.getPrice() != null) {
@@ -123,7 +124,8 @@ public class CertificateDTO {
         if (getCreateDate() != null ? !getCreateDate().equals(that.getCreateDate()) : that.getCreateDate() != null) {
             return false;
         }
-        return getLastUpdateDate() != null ? getLastUpdateDate().equals(that.getLastUpdateDate()) : that.getLastUpdateDate() == null;
+        return getLastUpdateDate() != null ? getLastUpdateDate().equals(that.getLastUpdateDate()) :
+                that.getLastUpdateDate() == null;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
+import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.dao.exception.DaoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,20 +42,20 @@ class GiftCertificateDaoImplTest {
                 .build();
         jdbcTemplate = new JdbcTemplate(dataSource);
         certificateDao = new GiftCertificateDaoImpl(jdbcTemplate);
-        certificate = new GiftCertificate(3L, "name", "description", new BigDecimal("20"), 5,
-                LocalDateTime.parse("2021-01-14T13:10:00"), LocalDateTime.parse("2022-01-14T13:10:00"));
-        expectedTwo = new GiftCertificate(2L, "Christmas Gift", "Entitle a discount of 50$ on purchasing gift item",
-                new BigDecimal("15.00"), 10, LocalDateTime.parse("2020-12-20T10:15:00"),
-                LocalDateTime.parse("2021-01-05T18:25:00"));
-        expectedOne = new GiftCertificate(1L, "Group meditation session", "Include 30 minute guided meditation and empower hour",
-                new BigDecimal("10.00"), 2, LocalDateTime.parse("2021-01-12T15:15:00"),
-                LocalDateTime.parse("2021-01-14T13:10:00"));
+        certificate = new GiftCertificate(null, "name", "description", new BigDecimal("20"),
+                5, LocalDateTime.parse("2021-01-14T13:10:00"), LocalDateTime.parse("2022-01-14T13:10:00"));
+        expectedTwo = new GiftCertificate(2L, "Christmas Gift",
+                "Entitle a discount of 50$ on purchasing gift item", new BigDecimal("15.00"), 10,
+                LocalDateTime.parse("2020-12-20T10:15:00"), LocalDateTime.parse("2021-01-05T18:25:00"));
+        expectedOne = new GiftCertificate(1L, "Group meditation session",
+                "Include 30 minute guided meditation and empower hour", new BigDecimal("10.00"), 2,
+                LocalDateTime.parse("2021-01-12T15:15:00"), LocalDateTime.parse("2021-01-14T13:10:00"));
     }
 
     @Test
     void testCreatePositive() throws DaoException {
-        boolean condition = certificateDao.create(certificate);
-        assertTrue(condition);
+        GiftCertificate actual = certificateDao.create(this.certificate);
+        assertEquals(actual, certificate);
     }
 
     @Test
@@ -82,15 +83,16 @@ class GiftCertificateDaoImplTest {
     @Test
     void testUpdatePositive() throws DaoException {
         Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id","1");
         paramMap.put("name", "new name");
         paramMap.put("description", "new description");
-        boolean condition = certificateDao.update(paramMap, 1L);
+        boolean condition = certificateDao.update(paramMap);
         assertTrue(condition);
     }
 
     @Test
     void testUpdateException() {
-        assertThrows(DaoException.class, () -> certificateDao.update(new HashMap<>(), 20L));
+        assertThrows(DaoException.class, () -> certificateDao.update(new HashMap<>()));
     }
 
     @Test
@@ -101,7 +103,7 @@ class GiftCertificateDaoImplTest {
 
     @Test
     void testSortByDatePositive() throws DaoException {
-        List<GiftCertificate> actual = certificateDao.sortByDate();
+        List<GiftCertificate> actual = certificateDao.sortByDate(SortType.ASC);
         List<GiftCertificate> expected = new ArrayList<>();
         expected.add(expectedTwo);
         expected.add(expectedOne);
@@ -110,7 +112,7 @@ class GiftCertificateDaoImplTest {
 
     @Test
     void testSortByNamePositive() throws DaoException {
-        List<GiftCertificate> actual = certificateDao.sortByName();
+        List<GiftCertificate> actual = certificateDao.sortByName(SortType.ASC);
         List<GiftCertificate> expected = new ArrayList<>();
         expected.add(expectedTwo);
         expected.add(expectedOne);

@@ -1,9 +1,9 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.service.GiftCertificateService;
 import com.epam.esm.model.service.dto.CertificateDTO;
 import com.epam.esm.model.service.exception.ServiceException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +20,6 @@ public class GiftCertificateController {
 
     private GiftCertificateController(GiftCertificateService certificateService) {
         this.certificateService = certificateService;
-    }
-
-    /**
-     * Handle exception response entity.
-     *
-     * @param exception the exception
-     * @return the response entity
-     */
-    @ExceptionHandler(ServiceException.class)
-    private ResponseEntity<Response> handleException(ServiceException exception) {
-        Response response = new Response(exception.getLocalizedMessage(), (long) HttpStatus.NOT_FOUND.value());
-        return ResponseEntity.ok(response);
     }
 
     /**
@@ -55,8 +43,8 @@ public class GiftCertificateController {
      * @throws ServiceException the service exception
      */
     @PostMapping(value = "/")
-    public ResponseEntity<Boolean> add(@RequestBody CertificateDTO certificateDTO) throws ServiceException {
-        boolean result = certificateService.add(certificateDTO);
+    public ResponseEntity<CertificateDTO> add(@RequestBody CertificateDTO certificateDTO) throws ServiceException {
+        CertificateDTO result = certificateService.add(certificateDTO);
         return ResponseEntity.ok(result);
     }
 
@@ -94,7 +82,8 @@ public class GiftCertificateController {
      * @throws ServiceException the service exception
      */
     @GetMapping("/byName/{name}")
-    public ResponseEntity<List<CertificateDTO>> findByTag(@PathVariable(name = "name") String tagName) throws ServiceException {
+    public ResponseEntity<List<CertificateDTO>> findByTag(@PathVariable(name = "name") String tagName)
+            throws ServiceException {
         List<CertificateDTO> certificates = certificateService.findByTag(tagName);
         return ResponseEntity.ok(certificates);
     }
@@ -107,7 +96,8 @@ public class GiftCertificateController {
      * @throws ServiceException the service exception
      */
     @GetMapping("/byPart/{part}")
-    public ResponseEntity<List<CertificateDTO>> searchByNameOrDesc(@PathVariable(name = "part") String part) throws ServiceException {
+    public ResponseEntity<List<CertificateDTO>> searchByNameOrDesc(@PathVariable(name = "part") String part)
+            throws ServiceException {
         List<CertificateDTO> certificates = certificateService.searchByNameOrDesc(part);
         return ResponseEntity.ok(certificates);
     }
@@ -118,21 +108,9 @@ public class GiftCertificateController {
      * @return the response entity
      * @throws ServiceException the service exception
      */
-    @GetMapping("/sortByName")
-    public ResponseEntity<List<CertificateDTO>> sortByName() throws ServiceException {
-        List<CertificateDTO> certificates = certificateService.sortByName();
-        return ResponseEntity.ok(certificates);
-    }
-
-    /**
-     * Sort certificates by name reverse.
-     *
-     * @return the response entity
-     * @throws ServiceException the service exception
-     */
-    @GetMapping("/sortByNameDesc")
-    public ResponseEntity<List<CertificateDTO>> sortByNameDesc() throws ServiceException {
-        List<CertificateDTO> certificates = certificateService.sortByNameDesc();
+    @GetMapping("/sortByName{sort}")
+    public ResponseEntity<List<CertificateDTO>> sortByName(@PathVariable(name = "sort") SortType sortType) throws ServiceException {
+        List<CertificateDTO> certificates = certificateService.sortByName(sortType);
         return ResponseEntity.ok(certificates);
     }
 
@@ -142,21 +120,9 @@ public class GiftCertificateController {
      * @return the response entity
      * @throws ServiceException the service exception
      */
-    @GetMapping("/sortByDate")
-    public ResponseEntity<List<CertificateDTO>> sortByDate() throws ServiceException {
-        List<CertificateDTO> certificates = certificateService.sortByDate();
-        return ResponseEntity.ok(certificates);
-    }
-
-    /**
-     * Sort certificates by date reverse.
-     *
-     * @return the response entity
-     * @throws ServiceException the service exception
-     */
-    @GetMapping("/sortByDateDesc")
-    public ResponseEntity<List<CertificateDTO>> sortByDateDesc() throws ServiceException {
-        List<CertificateDTO> certificates = certificateService.sortByDateDesc();
+    @GetMapping("/sortByDate{sort}")
+    public ResponseEntity<List<CertificateDTO>> sortByDate(@PathVariable(name = "sort") SortType sortType) throws ServiceException {
+        List<CertificateDTO> certificates = certificateService.sortByDate(sortType);
         return ResponseEntity.ok(certificates);
     }
 }

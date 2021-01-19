@@ -1,5 +1,5 @@
-<web-app id="WebMVC">
-    <display-name>Web Application</display-name>
+<web-app id="certificates">
+    <display-name>Gift certificate</display-name>
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -8,7 +8,6 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-    src/main/webapp/WEB-INF/web.xml
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>

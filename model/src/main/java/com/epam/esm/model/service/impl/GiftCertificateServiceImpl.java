@@ -2,6 +2,7 @@ package com.epam.esm.model.service.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
+import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.dao.exception.DaoException;
 import com.epam.esm.model.service.GiftCertificateService;
 import com.epam.esm.model.service.converter.impl.CertificateConverter;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final static Logger logger = Logger.getLogger(GiftCertificateServiceImpl.class);
-    private final static String ID = "id";
     private final GiftCertificateDao certificateDao;
     private final CertificateConverter certificateConverter;
 
@@ -43,11 +43,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public boolean add(CertificateDTO certificateDTO) throws ServiceException {
+    public CertificateDTO add(CertificateDTO certificateDTO) throws ServiceException {
         try {
             GiftCertificate certificate = certificateConverter.fromDTO(certificateDTO);
-            boolean result = certificateDao.create(certificate);
-            return result;
+            GiftCertificate addCertificate = certificateDao.create(certificate);
+            return certificateConverter.toDTO(addCertificate);
         } catch (DaoException e) {
             logger.error("Add certificate service exception", e);
             throw new ServiceException("Add certificate service exception", e);
@@ -58,11 +58,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public boolean update(CertificateDTO certificateDTO) throws ServiceException {
         try {
             Map<String, Object> map = new ObjectMapper().convertValue(certificateDTO, Map.class);
-            Map<String, Object> collect = map.entrySet().stream()
-                    .filter(e -> e.getValue() != null)
-                    .filter(e -> !e.getKey().equals(ID))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            boolean result = certificateDao.update(collect, (Long) map.get(ID));
+            boolean result = certificateDao.update(map);
             return result;
         } catch (DaoException e) {
             logger.error("Update certificate service exception", e);
@@ -104,9 +100,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<CertificateDTO> sortByName() throws ServiceException {
+    public List<CertificateDTO> sortByName(SortType sortType) throws ServiceException {
         try {
-            List<GiftCertificate> certificates = certificateDao.sortByName();
+            List<GiftCertificate> certificates = certificateDao.sortByName(sortType);
             return certificates.stream().map(certificateConverter::toDTO).collect(Collectors.toList());
         } catch (DaoException e) {
             logger.error("Sort by name exception", e);
@@ -115,39 +111,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<CertificateDTO> sortByNameDesc() throws ServiceException {
+    public List<CertificateDTO> sortByDate(SortType sortType) throws ServiceException {
         try {
-            List<GiftCertificate> certificates = certificateDao.sortByName();
-            List<CertificateDTO> certificateDTOS = certificates.stream().map(certificateConverter::toDTO).collect(Collectors.toList());
-            Collections.reverse(certificateDTOS);
-            return certificateDTOS;
-        } catch (DaoException e) {
-            logger.error("Sort by name desc exception", e);
-            throw new ServiceException("Sort by name desc exception", e);
-        }
-    }
-
-    @Override
-    public List<CertificateDTO> sortByDate() throws ServiceException {
-        try {
-            List<GiftCertificate> certificates = certificateDao.sortByDate();
+            List<GiftCertificate> certificates = certificateDao.sortByDate(sortType);
             return certificates.stream().map(certificateConverter::toDTO).collect(Collectors.toList());
         } catch (DaoException e) {
             logger.error("Sort by date exception", e);
             throw new ServiceException("Sort by date exception", e);
-        }
-    }
-
-    @Override
-    public List<CertificateDTO> sortByDateDesc() throws ServiceException {
-        try {
-            List<GiftCertificate> certificates = certificateDao.sortByDate();
-            List<CertificateDTO> certificateDTOS = certificates.stream().map(certificateConverter::toDTO).collect(Collectors.toList());
-            Collections.reverse(certificateDTOS);
-            return certificateDTOS;
-        } catch (DaoException e) {
-            logger.error("Sort by date desc exception", e);
-            throw new ServiceException("Sort by date desc exception", e);
         }
     }
 }

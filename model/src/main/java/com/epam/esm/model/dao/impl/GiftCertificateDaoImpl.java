@@ -2,16 +2,20 @@ package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
+import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.dao.exception.DaoException;
 import com.epam.esm.model.dao.mapper.GiftCertificateMapper;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
@@ -21,33 +25,46 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private final static String READ_GIFT_CERTIFICATE_SQL =
             "SELECT id,name,description,price,duration,create_date,last_update_date FROM gift_certificate WHERE id=?";
     private final static String CREATE_GIFT_CERTIFICATE_SQL =
-            "INSERT INTO gift_certificate(name,description,price,duration,create_date,last_update_date) VALUES (?,?,?,?,?,?)";
+            "INSERT INTO gift_certificate(name,description,price,duration,create_date,last_update_date)" +
+                    " VALUES (?,?,?,?,?,?)";
     private final static String DELETE_GIFT_CERTIFICATE_SQL = "DELETE FROM gift_certificate WHERE ID=?";
     private final static String SELECT_GIFT_CERTIFICATE_BY_TAG_SQL =
-            "SELECT c.id,c.name,c.description,c.price,c.duration,c.create_date,c.last_update_date from gift_certificate c " +
-                    "inner join tag_certificate tc on c.id=tc.id_certificate " +
+            "SELECT c.id,c.name,c.description,c.price,c.duration,c.create_date,c.last_update_date " +
+                    "from gift_certificate c inner join tag_certificate tc on c.id=tc.id_certificate " +
                     "inner join tag t on tc.id_tag=t.id WHERE t.name=?";
-    private final static String SELECT_BY_NAME_OR_DESC = "SELECT id,name,description,price,duration,create_date,last_update_date " +
-            "FROM gift_certificate WHERE name OR description LIKE ?";
+    private final static String SELECT_BY_NAME_OR_DESC = "SELECT id,name,description,price,duration,create_date," +
+            "last_update_date FROM gift_certificate WHERE name OR description LIKE ?";
     private final static String SORT_BY_NAME_SQL =
-            "SELECT id,name,description,price,duration,create_date,last_update_date FROM gift_certificate ORDER BY name";
+            "SELECT id,name,description,price,duration,create_date,last_update_date" +
+                    " FROM gift_certificate ORDER BY name ";
     private final static String SORT_BY_DATE_SQL =
-            "SELECT id,name,description,price,duration,create_date,last_update_date FROM gift_certificate ORDER BY create_date";
+            "SELECT id,name,description,price,duration,create_date,last_update_date " +
+                    "FROM gift_certificate ORDER BY create_date ";
     private final static String UPDATE_FIRST_PART_SQL = "UPDATE gift_certificate SET ";
     private final static String UPDATE_SECOND_PART_SQL = " WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("gift_certificate")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public boolean create(GiftCertificate certificate) throws DaoException {
+    public GiftCertificate create(GiftCertificate certificate) throws DaoException {
         try {
-            int rows = jdbcTemplate.update(CREATE_GIFT_CERTIFICATE_SQL, certificate.getName(), certificate.getDescription(),
-                    certificate.getPrice(), certificate.getDuration(), certificate.getCreateDate(), certificate.getLastUpdateDate());
-            return rows > 0;
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("name", certificate.getName());
+            parameters.put("description", certificate.getDescription());
+            parameters.put("price", certificate.getPrice());
+            parameters.put("duration", certificate.getDuration());
+            parameters.put("create_date", certificate.getCreateDate());
+            parameters.put("last_update_date", certificate.getLastUpdateDate());
+            Number id = jdbcInsert.executeAndReturnKey(parameters);
+            certificate.setId(id.longValue());
+            return certificate;
         } catch (DataAccessException e) {
             logger.error("Create certificate exception", e);
             throw new DaoException("Create certificate exception", e);
@@ -67,8 +84,13 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public boolean update(Map<String, Object> map, Long id) throws DaoException {
+    public boolean update(Map<String, Object> data) throws DaoException {
         try {
+            Map<String, Object> map = data.entrySet().stream()
+                    .filter(e -> e.getValue() != null)
+                    .filter(e -> !e.getKey().equals("id"))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Long id = (long) map.get("id");
             StringBuilder builder = new StringBuilder(UPDATE_FIRST_PART_SQL);
             int size = map.size();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -114,7 +136,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     public List<GiftCertificate> findByTag(String tag) throws DaoException {
         try {
             List<GiftCertificate> certificates =
-                    jdbcTemplate.query(SELECT_GIFT_CERTIFICATE_BY_TAG_SQL, new Object[]{tag}, new GiftCertificateMapper());
+                    jdbcTemplate.query(SELECT_GIFT_CERTIFICATE_BY_TAG_SQL, new Object[]{tag},
+                            new GiftCertificateMapper());
             return certificates;
         } catch (DataAccessException e) {
             logger.error("Find by tag exception", e);
@@ -136,10 +159,14 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> sortByDate() throws DaoException {
+    public List<GiftCertificate> sortByDate(SortType sortType) throws DaoException {
         try {
+            StringBuilder builder = new StringBuilder(SORT_BY_DATE_SQL);
+            if (sortType == SortType.DESC) {
+                builder.append(SortType.DESC);
+            }
             List<GiftCertificate> certificates =
-                    jdbcTemplate.query(SORT_BY_DATE_SQL, new GiftCertificateMapper());
+                    jdbcTemplate.query(builder.toString(), new GiftCertificateMapper());
             return certificates;
         } catch (DataAccessException e) {
             logger.error("Sort by date exception", e);
@@ -148,10 +175,14 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> sortByName() throws DaoException {
+    public List<GiftCertificate> sortByName(SortType sortType) throws DaoException {
         try {
+            StringBuilder builder = new StringBuilder(SORT_BY_NAME_SQL);
+            if (sortType == SortType.DESC) {
+                builder.append(SortType.DESC);
+            }
             List<GiftCertificate> certificates =
-                    jdbcTemplate.query(SORT_BY_NAME_SQL, new GiftCertificateMapper());
+                    jdbcTemplate.query(builder.toString(), new GiftCertificateMapper());
             return certificates;
         } catch (DataAccessException e) {
             logger.error("Sort by name exception", e);
