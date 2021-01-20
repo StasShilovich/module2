@@ -56,8 +56,8 @@ public class GiftCertificateController {
      * @throws ServiceException the service exception
      */
     @PutMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<Boolean> update(@RequestBody CertificateDTO certificateDTO) throws ServiceException {
-        boolean result = certificateService.update(certificateDTO);
+    public ResponseEntity<CertificateDTO> update(@RequestBody CertificateDTO certificateDTO) throws ServiceException {
+        CertificateDTO result = certificateService.update(certificateDTO);
         return ResponseEntity.ok(result);
     }
 
@@ -69,9 +69,9 @@ public class GiftCertificateController {
      * @throws ServiceException the service exception
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable(name = "id") Long id) throws ServiceException {
-        boolean result = certificateService.delete(id);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<String> delete(@PathVariable(name = "id") Long id) throws ServiceException {
+        long result = certificateService.delete(id);
+        return result != -1L ? ResponseEntity.ok("Delete successful!") : ResponseEntity.ok("Delete unsuccessful!");
     }
 
     /**

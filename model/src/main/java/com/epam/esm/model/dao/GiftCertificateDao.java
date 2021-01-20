@@ -3,6 +3,7 @@ package com.epam.esm.model.dao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.dao.exception.DaoException;
+import com.epam.esm.model.service.dto.CertificateDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,9 @@ public interface GiftCertificateDao {
 
     GiftCertificate read(Long id) throws DaoException;
 
-    boolean update(Map<String, Object> map) throws DaoException;
+    long update(CertificateDTO certificate) throws DaoException;
 
-    boolean delete(Long id) throws DaoException;
+    long delete(Long id) throws DaoException;
 
     List<GiftCertificate> findByTag(String tag) throws DaoException;
 

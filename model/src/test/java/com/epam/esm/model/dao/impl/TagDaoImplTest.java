@@ -16,7 +16,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -41,8 +40,8 @@ class TagDaoImplTest {
     void testCreatePositive() throws DaoException {
         Tag tag = new Tag();
         tag.setName("new tag");
-        boolean condition = tagDao.create(tag);
-        assertTrue(condition);
+        Tag actual = this.tagDao.create(tag);
+        assertEquals(actual, new Tag(7L,"new tag"));
     }
 
     @Test
@@ -54,7 +53,7 @@ class TagDaoImplTest {
 
     @Test
     void delete() throws DaoException {
-        boolean condition = tagDao.delete(3L);
-        assertTrue(condition);
+        long actual = tagDao.delete(3L);
+        assertEquals(actual, 3L);
     }
 }

@@ -4,6 +4,7 @@ import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.dao.exception.DaoException;
+import com.epam.esm.model.service.dto.CertificateDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,14 +16,11 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GiftCertificateDaoImplTest {
 
@@ -82,23 +80,16 @@ class GiftCertificateDaoImplTest {
 
     @Test
     void testUpdatePositive() throws DaoException {
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("id","1");
-        paramMap.put("name", "new name");
-        paramMap.put("description", "new description");
-        boolean condition = certificateDao.update(paramMap);
-        assertTrue(condition);
-    }
-
-    @Test
-    void testUpdateException() {
-        assertThrows(DaoException.class, () -> certificateDao.update(new HashMap<>()));
+        CertificateDTO certificateDTO = new CertificateDTO(1L, "Group meditation", null, null,
+                null, null, null);
+        long actual = certificateDao.update(certificateDTO);
+        assertEquals(actual, 1L);
     }
 
     @Test
     void testDeletePositive() throws DaoException {
-        boolean condition = certificateDao.delete(2L);
-        assertTrue(condition);
+        long actual = certificateDao.delete(2L);
+        assertEquals(actual, 2L);
     }
 
     @Test

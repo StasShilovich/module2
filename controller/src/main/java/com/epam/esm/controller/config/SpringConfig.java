@@ -7,11 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableWebMvc
 @Configuration
-@PropertySource(value = "classpath:application.properties")
+@PropertySource("classpath:application-${spring.profiles.active}.properties")
 public class SpringConfig implements EnvironmentAware {
 
     private Environment environment;
@@ -22,19 +24,24 @@ public class SpringConfig implements EnvironmentAware {
     }
 
     @Bean
-    public BasicDataSource mysqlDataSource() {
+    public BasicDataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(environment.getProperty("datasource.driverClassName"));
         dataSource.setUrl(environment.getProperty("datasource.url"));
         dataSource.setUsername(environment.getProperty("datasource.username"));
-        dataSource.setPassword(System.getenv("DB_PASSWORD_DEV"));
+        dataSource.setPassword(System.getenv(environment.getProperty("datasource.password.env")));
         dataSource.setMinIdle(Integer.parseInt(environment.getProperty("datasource.minIdle")));
         dataSource.setMaxActive(Integer.parseInt(environment.getProperty("datasource.maxActive")));
         return dataSource;
     }
 
     @Bean
-    JdbcTemplate jdbcTemplate(BasicDataSource dataSource) {
+    public JdbcTemplate jdbcTemplate(BasicDataSource dataSource) {
         return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(BasicDataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 }

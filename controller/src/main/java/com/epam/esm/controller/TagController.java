@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.dto.TagDTO;
 import com.epam.esm.model.service.exception.ServiceException;
@@ -40,10 +41,10 @@ public class TagController {
      * @throws ServiceException the service exception
      */
     @PostMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<Boolean> add(@RequestBody String tagName) throws ServiceException {
+    public ResponseEntity<TagDTO> add(@RequestBody String tagName) throws ServiceException {
         TagDTO tag = new TagDTO();
         tag.setName(tagName);
-        boolean result = tagService.add(tag);
+        TagDTO result = tagService.add(tag);
         return ResponseEntity.ok(result);
     }
 
@@ -55,8 +56,8 @@ public class TagController {
      * @throws ServiceException the service exception
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable(name = "id") Long id) throws ServiceException {
-        boolean result = tagService.delete(id);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<String> delete(@PathVariable(name = "id") Long id) throws ServiceException {
+        long result = tagService.delete(id);
+        return result != -1L ? ResponseEntity.ok("Delete successful!") : ResponseEntity.ok("Delete unsuccessful!");
     }
 }

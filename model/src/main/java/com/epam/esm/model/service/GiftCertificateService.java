@@ -12,9 +12,9 @@ public interface GiftCertificateService {
 
     CertificateDTO add(CertificateDTO certificateDTO) throws ServiceException;
 
-    boolean update(CertificateDTO certificateDTO) throws ServiceException;
+    CertificateDTO update(CertificateDTO certificateDTO) throws ServiceException;
 
-    boolean delete(Long id) throws ServiceException;
+    long delete(Long id) throws ServiceException;
 
     List<CertificateDTO> findByTag(String tagName) throws ServiceException;
 
@@ -23,5 +23,4 @@ public interface GiftCertificateService {
     List<CertificateDTO> sortByName(SortType sortType) throws ServiceException;
 
     List<CertificateDTO> sortByDate(SortType sortType) throws ServiceException;
-
 }

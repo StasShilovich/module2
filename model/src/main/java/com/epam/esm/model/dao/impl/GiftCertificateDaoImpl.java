@@ -5,6 +5,8 @@ import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.dao.exception.DaoException;
 import com.epam.esm.model.dao.mapper.GiftCertificateMapper;
+import com.epam.esm.model.service.dto.CertificateDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -84,17 +86,19 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public boolean update(Map<String, Object> data) throws DaoException {
+    public long update(CertificateDTO certificate) throws DaoException {
         try {
+            Map<String, Object> data = new ObjectMapper().convertValue(certificate, Map.class);
             Map<String, Object> map = data.entrySet().stream()
                     .filter(e -> e.getValue() != null)
                     .filter(e -> !e.getKey().equals("id"))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            Long id = (long) map.get("id");
+            Long id = (long) data.get("id");
             StringBuilder builder = new StringBuilder(UPDATE_FIRST_PART_SQL);
             int size = map.size();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey();
+                Object value = entry.getValue();
                 if (key.equals("createDate") || key.equals("lastUpdateDate")) {
                     if (key.equals("createDate")) {
                         builder.append("create_date");
@@ -102,10 +106,10 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
                         builder.append("last_update_date");
                     }
                     builder.append("=").append("'");
-                    LocalDateTime dateTime = LocalDateTime.parse((String) entry.getValue());
+                    LocalDateTime dateTime = LocalDateTime.parse(value.toString());
                     builder.append(dateTime).append("'");
                 } else {
-                    builder.append(key).append("=").append("'").append(entry.getValue().toString()).append("'");
+                    builder.append(key).append("=").append("'").append(value.toString()).append("'");
                 }
                 size--;
                 if (size > 0) {
@@ -114,7 +118,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             }
             builder.append(UPDATE_SECOND_PART_SQL);
             int rows = jdbcTemplate.update(builder.toString(), id);
-            return rows > 0;
+            return rows > 0L ? id : -1L;
         } catch (DataAccessException e) {
             logger.error("Update certificate exception", e);
             throw new DaoException("Update certificate exception", e);
@@ -122,10 +126,10 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public boolean delete(Long id) throws DaoException {
+    public long delete(Long id) throws DaoException {
         try {
             int rows = jdbcTemplate.update(DELETE_GIFT_CERTIFICATE_SQL, id);
-            return rows > 0;
+            return rows > 0L ? id : -1L;
         } catch (DataAccessException e) {
             logger.error("Delete certificate exception", e);
             throw new DaoException("Delete certificate exception", e);

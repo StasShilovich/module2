@@ -11,6 +11,7 @@ import com.epam.esm.model.service.exception.ServiceException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -36,11 +37,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public boolean add(TagDTO tagDTO) throws ServiceException {
+    @Transactional
+    public TagDTO add(TagDTO tagDTO) throws ServiceException {
         try {
             Tag tag = tagConverter.fromDTO(tagDTO);
-            boolean isAdd = tagDao.create(tag);
-            return isAdd;
+            Tag tagDao = this.tagDao.create(tag);
+            return tagConverter.toDTO(tagDao);
         } catch (DaoException e) {
             logger.error("Add tag service exception", e);
             throw new ServiceException("Add tag service exception", e);
@@ -48,9 +50,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public boolean delete(Long id) throws ServiceException {
+    @Transactional
+    public long delete(Long id) throws ServiceException {
         try {
-            boolean isDelete = tagDao.delete(id);
+            long isDelete = tagDao.delete(id);
             return isDelete;
         } catch (DaoException e) {
             logger.error("Delete tag service exception", e);

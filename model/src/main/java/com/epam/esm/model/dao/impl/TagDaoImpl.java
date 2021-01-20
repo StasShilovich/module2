@@ -7,7 +7,11 @@ import com.epam.esm.model.dao.mapper.TagMapper;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 public class TagDaoImpl implements TagDao {
@@ -18,15 +22,21 @@ public class TagDaoImpl implements TagDao {
     private final static String DELETE_TAG_SQL = "DELETE FROM tag WHERE id=?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public TagDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("tag")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public boolean create(Tag tag) throws DaoException {
+    public Tag create(Tag tag) throws DaoException {
         try {
-            int rows = jdbcTemplate.update(CREATE_TAG_SQL, tag.getName());
-            return rows > 0;
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("name", tag.getName());
+            Number id = jdbcInsert.executeAndReturnKey(parameters);
+            tag.setId(id.longValue());
+            return tag;
         } catch (DataAccessException e) {
             logger.error("Create tag exception", e);
             throw new DaoException("Create tag exception", e);
@@ -43,10 +53,10 @@ public class TagDaoImpl implements TagDao {
         }
     }
 
-    public boolean delete(Long id) throws DaoException {
+    public long delete(Long id) throws DaoException {
         try {
             int rows = jdbcTemplate.update(DELETE_TAG_SQL, id);
-            return rows > 0;
+            return rows > 0L ? id : -1L;
         } catch (DataAccessException e) {
             logger.error("Delete tag exception", e);
             throw new DaoException("Delete tag exception", e);

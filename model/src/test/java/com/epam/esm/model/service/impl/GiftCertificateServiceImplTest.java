@@ -22,13 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.lenient;
 
@@ -85,7 +82,7 @@ class GiftCertificateServiceImplTest {
     void testAddNegative() throws DaoException, ServiceException {
         lenient().when(dao.create(any(GiftCertificate.class))).thenReturn(certificate);
         CertificateDTO actual = service.add(certificateDTO);
-        assertNotEquals(actual, certificateDTO);
+        assertNotEquals(actual, new CertificateDTO());
     }
 
     @Test
@@ -96,36 +93,38 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void testUpdatePositive() throws DaoException, ServiceException {
-        lenient().when(dao.update(anyMap())).thenReturn(true);
-        boolean condition = service.update(certificateDTO);
-        assertTrue(condition);
+        lenient().when(dao.update(any(CertificateDTO.class))).thenReturn(1L);
+        lenient().when((dao.read(anyLong()))).thenReturn(certificate);
+        CertificateDTO actual = service.update(certificateDTO);
+        assertEquals(actual, certificateDTO);
     }
 
     @Test
     void testUpdateNegative() throws DaoException, ServiceException {
-        lenient().when(dao.update(anyMap())).thenReturn(false);
-        boolean condition = service.update(certificateDTO);
-        assertFalse(condition);
+        lenient().when(dao.update(any(CertificateDTO.class))).thenReturn(1L);
+        lenient().when((dao.read(anyLong()))).thenReturn(certificate);
+        CertificateDTO actual = service.update(certificateDTO);
+        assertNotEquals(actual, new CertificateDTO());
     }
 
     @Test
     void testUpdateException() throws DaoException {
-        lenient().when(dao.update(anyMap())).thenThrow(DaoException.class);
+        lenient().when(dao.update(any(CertificateDTO.class))).thenThrow(DaoException.class);
         assertThrows(ServiceException.class, () -> service.update(certificateDTO));
     }
 
     @Test
     void testDeletePositive() throws DaoException, ServiceException {
-        lenient().when(dao.delete(anyLong())).thenReturn(true);
-        boolean condition = service.delete(1L);
-        assertTrue(condition);
+        lenient().when(dao.delete(anyLong())).thenReturn(1L);
+        long actual = service.delete(1L);
+        assertEquals(actual, 1L);
     }
 
     @Test
     void testDeleteNegative() throws DaoException, ServiceException {
-        lenient().when(dao.delete(anyLong())).thenReturn(false);
-        boolean condition = service.delete(1L);
-        assertFalse(condition);
+        lenient().when(dao.delete(anyLong())).thenReturn(1L);
+        long actual = service.delete(1L);
+        assertNotEquals(actual, 2L);
     }
 
     @Test

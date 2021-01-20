@@ -17,10 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.lenient;
@@ -67,16 +65,16 @@ class TagServiceImplTest {
 
     @Test
     void testAddPositive() throws ServiceException, DaoException {
-        lenient().when(tagDao.create(any(Tag.class))).thenReturn(true);
-        boolean condition = tagService.add(correctTagDTO);
-        assertTrue(condition);
+        lenient().when(tagDao.create(any(Tag.class))).thenReturn(correctTag);
+        TagDTO actual = tagService.add(correctTagDTO);
+        assertEquals(actual, correctTagDTO);
     }
 
     @Test
     void testAddNegative() throws DaoException, ServiceException {
-        lenient().when(tagDao.create(any(Tag.class))).thenReturn(false);
-        boolean condition = tagService.add(correctTagDTO);
-        assertFalse(condition);
+        lenient().when(tagDao.create(any(Tag.class))).thenReturn(correctTag);
+        TagDTO actual = tagService.add(correctTagDTO);
+        assertNotEquals(actual, new TagDTO());
     }
 
     @Test
@@ -87,16 +85,16 @@ class TagServiceImplTest {
 
     @Test
     void testDeletePositive() throws DaoException, ServiceException {
-        lenient().when(tagDao.delete(anyLong())).thenReturn(true);
-        boolean condition = tagService.delete(1L);
-        assertTrue(condition);
+        lenient().when(tagDao.delete(anyLong())).thenReturn(1L);
+        long actual = tagService.delete(1L);
+        assertEquals(actual, 1L);
     }
 
     @Test
     void testDeleteNegative() throws DaoException, ServiceException {
-        lenient().when(tagDao.delete(anyLong())).thenReturn(false);
-        boolean condition = tagService.delete(1L);
-        assertFalse(condition);
+        lenient().when(tagDao.delete(anyLong())).thenReturn(1L);
+        long actual = tagService.delete(1L);
+        assertNotEquals(actual, 2L);
     }
 
     @Test

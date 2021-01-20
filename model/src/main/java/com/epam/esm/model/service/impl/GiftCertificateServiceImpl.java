@@ -11,6 +11,7 @@ import com.epam.esm.model.service.exception.ServiceException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public CertificateDTO add(CertificateDTO certificateDTO) throws ServiceException {
         try {
             GiftCertificate certificate = certificateConverter.fromDTO(certificateDTO);
@@ -55,11 +57,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public boolean update(CertificateDTO certificateDTO) throws ServiceException {
+    @Transactional
+    public CertificateDTO update(CertificateDTO certificateDTO) throws ServiceException {
         try {
-            Map<String, Object> map = new ObjectMapper().convertValue(certificateDTO, Map.class);
-            boolean result = certificateDao.update(map);
-            return result;
+            long id = certificateDao.update(certificateDTO);
+            if (id == -1L) {
+                return new CertificateDTO();
+            }
+            GiftCertificate certificate = certificateDao.read(id);
+            return certificateConverter.toDTO(certificate);
         } catch (DaoException e) {
             logger.error("Update certificate service exception", e);
             throw new ServiceException("Update certificate service exception", e);
@@ -67,9 +73,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public boolean delete(Long id) throws ServiceException {
+    @Transactional
+    public long delete(Long id) throws ServiceException {
         try {
-            boolean result = certificateDao.delete(id);
+            long result = certificateDao.delete(id);
             return result;
         } catch (DaoException e) {
             logger.error("Delete certificate service exception", e);

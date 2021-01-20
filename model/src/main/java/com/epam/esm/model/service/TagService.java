@@ -7,7 +7,7 @@ public interface TagService {
 
     TagDTO find(Long id) throws ServiceException;
 
-    boolean add(TagDTO tagDTO) throws ServiceException;
+    TagDTO add(TagDTO tagDTO) throws ServiceException;
 
-    boolean delete(Long id) throws ServiceException;
+    long delete(Long id) throws ServiceException;
 }
